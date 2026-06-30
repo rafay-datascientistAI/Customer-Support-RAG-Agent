@@ -1,0 +1,16 @@
+langchain
+langchain-core
+langchain-community
+python-dotenv
+pypdf
+Chroma
+pymupdf
+sentence-transformers
+langchain-huggingface
+langchain-groq
+langchain-openai
+pathlib
+pydantic
+rank_bm25
+langchain-chroma
+fastapi
