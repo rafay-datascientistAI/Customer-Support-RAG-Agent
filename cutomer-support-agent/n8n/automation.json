@@ -1,0 +1,129 @@
+{
+  "name": "University AI Simple",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "university-support",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6c15c9e6-aa13-4c89-9268-a7cd743ce919",
+      "name": "Webhook",
+      "webhookId": "b760775f-1076-4786-aa55-257d56e5b457"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "606184fb-3503-41cb-8e74-caa976318b41",
+              "name": "question",
+              "value": "=={{ $json.body.question }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c9902372-d979-4bce-98ab-ab788fb90608",
+      "name": "Extract  Question"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://customer-support-rag-agent-production.up.railway.app/ask",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"question\": \"{{ $json.question }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "c0574fa8-c6a2-4547-8568-543dc37644e3",
+      "name": "call FastAPI"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{\n  {\n    \"success\": $json.success || false,\n    \"message\": $json.success ? $json.answer : \"Sorry, is sawal ka jawab nahi mila.\",\n    \"question\": $json.question\n  }\n}}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        624,
+        0
+      ],
+      "id": "38564088-4e55-48a1-a106-3feb1759e4fc",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract  Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract  Question": {
+      "main": [
+        [
+          {
+            "node": "call FastAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "call FastAPI": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "aef4e1ca-84c3-4715-bcea-37b7b2758f1e",
+  "meta": {
+    "instanceId": "a8957d8567da37e91bad9cfca9abe8101d8a616efae4b3c05b840712d2def6a0"
+  },
+  "nodeGroups": [],
+  "id": "16SUcksmjWyswP6n",
+  "tags": []
+}
